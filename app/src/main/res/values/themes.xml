@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PROXYHYR" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/hyr_cyan</item>
+        <item name="colorPrimaryVariant">@color/hyr_cyan</item>
+        <item name="colorOnPrimary">#001016</item>
+        <item name="android:windowBackground">@color/hyr_bg</item>
+        <item name="android:statusBarColor">@color/hyr_bg</item>
+        <item name="android:navigationBarColor">@color/hyr_bg</item>
+    </style>
+
+    <style name="Theme.PROXYHYR.Login" parent="Theme.PROXYHYR">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>
