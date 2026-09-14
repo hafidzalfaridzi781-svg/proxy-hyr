@@ -11,6 +11,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify required files
+        run: |
+          MISSING=0
+          for f in \
+            settings.gradle \
+            build.gradle \
+            gradle.properties \
+            app/build.gradle \
+            app/src/main/AndroidManifest.xml \
+            app/src/main/java/com/zyecitedz/proxyhyr/LoginActivity.java \
+            app/src/main/java/com/zyecitedz/proxyhyr/MainActivity.java \
+            app/src/main/java/com/zyecitedz/proxyhyr/ShizukuHelper.java \
+            app/src/main/java/com/zyecitedz/proxyhyr/PermissionHelper.java \
+            app/src/main/java/com/zyecitedz/proxyhyr/BackgroundService.java \
+            app/src/main/res/layout/activity_login.xml \
+            app/src/main/res/layout/activity_main.xml \
+            app/src/main/res/values/strings.xml \
+            app/src/main/res/values/colors.xml \
+            app/src/main/res/values/themes.xml \
+            app/src/main/res/xml/network_security_config.xml \
+            app/src/main/res/anim/shake.xml \
+            app/src/main/assets/index.html \
+            app/src/main/assets/localconfig.json \
+            scripts/gen_patch.py \
+            scripts/gen_shader.py \
+            scripts/gen_vqcfg.py \
+            scripts/build_assets.py ; do
+            if [ ! -f "$f" ]; then
+              echo "❌ MISSING: $f"
+              MISSING=1
+            else
+              echo "✅ $f"
+            fi
+          done
+          if [ $MISSING -eq 1 ]; then
+            echo ""
+            echo "File di atas belum di-commit. Tambahkan dulu."
+            exit 1
+          fi
+
       - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
@@ -37,23 +77,11 @@ jobs:
       - name: Build APK (debug)
         run: gradle assembleDebug --no-daemon
 
-      - name: Build APK (release unsigned)
-        run: gradle assembleRelease --no-daemon
-
-      - name: List outputs
-        run: ls -la app/build/outputs/apk/debug/ app/build/outputs/apk/release/
-
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: PROXY-HYR-debug
           path: app/build/outputs/apk/debug/*.apk
-
-      - name: Upload release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: PROXY-HYR-release
-          path: app/build/outputs/apk/release/*.apk
 
       - name: Create Release
         if: github.ref == 'refs/heads/main'
@@ -61,21 +89,5 @@ jobs:
         with:
           tag_name: v1.0.${{ github.run_number }}
           name: PROXY HYR v1.0.${{ github.run_number }} — ZyeCitedz
-          body: |
-            ## PROXY HYR — Unity IL Patch
-            
-            **Developer:** © ZyeCitedz  
-            **Channel:** [PROXY UPDATE](https://whatsapp.com/channel/0029VbCdJuNDZ4LT4arD1H3v)
-            
-            ### Fitur
-            - Login gate (key akses)
-            - Shizuku integration
-            - Background foreground service
-            - Proxy config + Unity IL Patch UI
-            
-            ### Install
-            Download APK → install → masukkan key akses.
-          files: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          files: app/build/outputs/apk/debug/*.apk
           token: ${{ secrets.GITHUB_TOKEN }}
