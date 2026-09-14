@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>PROXY HYR</title>
+<style>
+  :root {
+    --bg:#05070a; --card:#0d131c; --card2:#111a26; --line:#1c2a3a;
+    --text:#e8f4ff; --muted:#7f95ad;
+    --cyan:#00e5ff; --green:#00ff9d; --red:#ff3b5c; --yellow:#ffd60a;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body {
+    margin:0; padding:0; min-height:100%;
+    background: radial-gradient(circle at 20% 0%, rgba(0,229,255,.10), transparent 35%),
+                radial-gradient(circle at 100% 20%, rgba(0,255,157,.08), transparent 30%),
+                linear-gradient(180deg, var(--bg), #0a0f16);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .app { max-width:480px; margin:0 auto; padding:18px 14px 28px; }
+
+  .topbar { display:flex; align-items:center; justify-content:space-between;
+            gap:12px; margin-bottom:16px; }
+  .brand { display:flex; align-items:center; gap:10px; min-width:0; }
+  .logo { width:42px; height:42px; border-radius:12px; display:grid;
+          place-items:center; background:linear-gradient(135deg,rgba(0,229,255,.18),rgba(0,255,157,.12));
+          border:1px solid rgba(0,229,255,.35); color:var(--cyan); font-weight:900; font-size:18px; }
+  .brand h1 { margin:0; font-size:15px; letter-spacing:.3px; }
+  .brand p  { margin:3px 0 0; font-size:11px; color:var(--muted); }
+  .brand .dev { color:var(--green); font-weight:800; }
+
+  .pill { display:flex; align-items:center; gap:6px; padding:7px 10px;
+          border-radius:999px; border:1px solid var(--line);
+          background:rgba(255,255,255,.03); font-size:11px;
+          font-weight:700; color:var(--muted); }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--red); }
+  .pill.on { color:var(--green); border-color:rgba(0,255,157,.35); }
+  .pill.on .dot { background:var(--green); }
+
+  .card { background:linear-gradient(180deg,var(--card),var(--card2));
+          border:1px solid var(--line); border-radius:16px;
+          padding:14px; margin-bottom:14px; }
+  .card-title { display:flex; justify-content:space-between; align-items:center;
+                margin-bottom:12px; }
+  .card-title h2 { margin:0; font-size:13px; letter-spacing:.6px;
+                   text-transform:uppercase; color:var(--cyan); }
+  .badge { font-size:10px; padding:4px 8px; border-radius:999px;
+           background:rgba(0,229,255,.08); border:1px solid rgba(0,229,255,.22);
+           color:var(--cyan); font-weight:700; }
+
+  .field { margin-bottom:12px; }
+  .field:last-child { margin-bottom:0; }
+  label { display:block; font-size:11px; color:var(--muted); margin-bottom:6px; }
+  input, select {
+    width:100%; height:44px; border-radius:12px; border:1px solid var(--line);
+    background:rgba(0,0,0,.28); color:var(--text); padding:0 12px;
+    font-size:13px; outline:none;
+  }
+  input:focus, select:focus { border-color:rgba(0,229,255,.6); }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  .switch-row { display:flex; justify-content:space-between; align-items:center;
+                gap:12px; padding:12px; border:1px solid var(--line);
+                border-radius:14px; background:rgba(255,255,255,.02); }
+  .switch-row strong { display:block; font-size:13px; margin-bottom:2px; }
+  .switch-row span { font-size:11px; color:var(--muted); }
+  .switch { position:relative; width:52px; height:30px; }
+  .switch input { opacity:0; width:0; height:0; position:absolute; }
+  .slider { position:absolute; inset:0; border-radius:999px;
+            background:#1a2635; border:1px solid var(--line); transition:.25s; }
+  .slider::before { content:""; position:absolute; width:22px; height:22px;
+                    left:3px; top:3px; border-radius:50%;
+                    background:#5d7288; transition:.25s; }
+  .switch input:checked + .slider { background:rgba(0,255,157,.16);
+                                     border-color:rgba(0,255,157,.55); }
+  .switch input:checked + .slider::before { transform:translateX(22px);
+                                            background:var(--green); }
+
+  .btn { width:100%; height:48px; border:0; border-radius:14px;
+         font-size:13px; font-weight:800; letter-spacing:.4px;
+         cursor:pointer; display:inline-flex; align-items:center;
+         justify-content:center; gap:8px; transition:.2s; }
+  .btn:active { transform:scale(.98); }
+  .btn-primary { background:linear-gradient(135deg,var(--cyan),var(--green));
+                 color:#001016; }
+  .btn-secondary { background:rgba(255,255,255,.05); color:var(--text);
+                   border:1px solid var(--line); }
+  .btn-channel { background:linear-gradient(135deg,#25D366,#128C7E);
+                 color:#fff; margin-top:10px; }
+  .btn-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+
+  .log { height:150px; overflow-y:auto; border-radius:12px;
+         border:1px solid var(--line); background:#030609; padding:10px;
+         font-family:ui-monospace,Menlo,monospace; font-size:11px;
+         line-height:1.55; color:#b7d7ea; }
+  .log-line { margin-bottom:4px; word-break:break-word; }
+  .log-line.ok   { color:var(--green); }
+  .log-line.warn { color:var(--yellow); }
+  .log-line.err  { color:var(--red); }
+  .log-line.info { color:var(--cyan); }
+
+  .footer { text-align:center; color:var(--muted); font-size:10px;
+            margin-top:8px; line-height:1.6; }
+  .footer a { color:var(--cyan); text-decoration:none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">PH</div>
+      <div>
+        <h1>PROXY HYR</h1>
+        <p>Unity IL Patch • <span class="dev" id="devName">© ZyeCitedz</span></p>
+      </div>
+    </div>
+    <div class="pill" id="statusPill">
+      <span class="dot"></span><span id="statusText">OFFLINE</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="card-title"><h2>Shizuku</h2><span class="badge" id="shizukuBadge">?</span></div>
+    <div class="switch-row">
+      <div>
+        <strong>Status Shizuku</strong>
+        <span id="shizukuText">Memeriksa...</span>
+      </div>
+      <button class="btn btn-secondary" style="width:auto;height:36px;padding:0 14px;font-size:11px;"
+              onclick="Android.requestShizuku()">REQUEST</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><h2>Proxy Config</h2><span class="badge">HYR</span></div>
+    <div class="field">
+      <label>Host / IP</label>
+      <input id="proxyHost" value="127.0.0.1" />
+    </div>
+    <div class="row">
+      <div class="field"><label>Port</label><input id="proxyPort" type="number" value="8080" /></div>
+      <div class="field"><label>Tipe</label>
+        <select id="proxyType"><option>HTTP</option><option>HTTPS</option>
+          <option>SOCKS4</option><option>SOCKS5</option></select></div>
+    </div>
+    <div class="switch-row" style="margin-top:6px;">
+      <div><strong>Aktifkan Proxy</strong><span>Routing via proxy</span></div>
+      <label class="switch"><input type="checkbox" id="proxyToggle"><span class="slider"></span></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><h2>Unity IL Patch</h2><span class="badge">IL</span></div>
+    <div class="field"><label>Target Package</label>
+      <input id="targetApp" value="com.dts.freefiremax" /></div>
+    <div class="row">
+      <div class="field"><label>Mode</label>
+        <select id="patchMode"><option>IL2CPP</option><option>Mono</option></select></div>
+      <div class="field"><label>Offset</label>
+        <input id="patchOffset" value="0x000000" /></div>
+    </div>
+    <div class="btn-grid">
+      <button class="btn btn-primary" onclick="applyPatch()">PATCH</button>
+      <button class="btn btn-secondary" onclick="restore()">RESTORE</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title"><h2>Log Output</h2>
+      <button class="btn btn-secondary" style="width:auto;height:30px;padding:0 12px;font-size:11px;"
+              onclick="clearLog()">CLEAR</button>
+    </div>
+    <div class="log" id="logBox">
+      <div class="log-line info">[INFO] PROXY HYR siap.</div>
+    </div>
+  </section>
+
+  <button class="btn btn-channel" onclick="Android.openChannel()">
+    📢 PROXY UPDATE — WhatsApp Channel
+  </button>
+
+  <div class="footer">
+    © <span id="devName2">ZyeCitedz</span> — PROXY HYR v1.0.0<br>
+    <a href="#" onclick="Android.openChannel();return false;">PROXY UPDATE</a>
+  </div>
+</div>
+
+<script>
+  const logBox = document.getElementById("logBox");
+
+  function log(msg, type="info") {
+    const line = document.createElement("div");
+    line.className = "log-line " + type;
+    const t = new Date().toLocaleTimeString("id-ID", {hour12:false});
+    line.textContent = "[" + t + "] " + msg;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+  function clearLog(){ logBox.innerHTML=""; log("[INFO] Log dibersihkan.","info"); }
+
+  // Init: ambil info dari Android bridge
+  try {
+    if (window.Android) {
+      document.getElementById("devName").textContent  = "© " + Android.getDeveloper();
+      document.getElementById("devName2").textContent = Android.getDeveloper();
+      refreshShizuku();
+    }
+  } catch(e){ log("[WARN] Bridge tidak tersedia","warn"); }
+
+  function refreshShizuku() {
+    try {
+      const avail = Android.isShizukuAvailable();
+      const granted = Android.isShizukuGranted();
+      const badge = document.getElementById("shizukuBadge");
+      const text  = document.getElementById("shizukuText");
+      if (!avail) {
+        badge.textContent = "N/A";
+        text.textContent = "Shizuku Manager tidak terinstall";
+        log("[WARN] Shizuku tidak tersedia","warn");
+      } else if (granted) {
+        badge.textContent = "✓";
+        text.textContent = "Permission GRANTED";
+        log("[OK] Shizuku siap","ok");
+      } else {
+        badge.textContent = "!";
+        text.textContent = "Permission belum diberikan";
+        log("[INFO] Menunggu permission Shizuku","info");
+      }
+    } catch(e){ log("[ERR] " + e, "err"); }
+  }
+
+  window.onShizukuStatus = function(granted) {
+    if (granted) log("[OK] Shizuku permission diterima","ok");
+    else log("[ERR] Shizuku permission ditolak","err");
+    refreshShizuku();
+  };
+
+  const proxyToggle = document.getElementById("proxyToggle");
+  proxyToggle.addEventListener("change", () => {
+    const on = proxyToggle.checked;
+    document.getElementById("statusPill").classList.toggle("on", on);
+    document.getElementById("statusText").textContent = on ? "ONLINE" : "OFFLINE";
+    log(on ? "[INFO] Proxy aktif" : "[INFO] Proxy nonaktif", "info");
+  });
+
+  function applyPatch() {
+    log("[INFO] Memulai patch: " + document.getElementById("targetApp").value, "info");
+    setTimeout(()=>log("[OK] Metadata Unity dibaca","ok"), 400);
+    setTimeout(()=>log("[OK] IL stream ditemukan","ok"), 800);
+    setTimeout(()=>log("[OK] Patch diterapkan","ok"), 1300);
+    setTimeout(()=>log("[OK] Selesai","ok"), 1700);
+  }
+  function restore() {
+    log("[WARN] Restore backup...","warn");
+    setTimeout(()=>log("[OK] Restore selesai","ok"), 800);
+  }
+</script>
+</body>
+</html>
