@@ -17,7 +17,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE_PATH") ?: "proxy-hyr.keystore")
+            storeFile rootProject.file("proxy-hyr.keystore")
             storePassword System.getenv("KEYSTORE_PASSWORD") ?: "zyecitedz123"
             keyAlias System.getenv("KEY_ALIAS") ?: "proxyhyr"
             keyPassword System.getenv("KEY_PASSWORD") ?: "zyecitedz123"
