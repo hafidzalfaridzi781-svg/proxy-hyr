@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="hyr_bg">#05070A</color>
+    <color name="hyr_card">#0D131C</color>
+    <color name="hyr_cyan">#00E5FF</color>
+    <color name="hyr_green">#00FF9D</color>
+    <color name="hyr_text">#E8F4FF</color>
+    <color name="hyr_muted">#7F95AD</color>
+</resources>
