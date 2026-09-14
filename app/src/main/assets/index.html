@@ -28,7 +28,7 @@
     font-size:11px;font-weight:700;color:var(--muted);}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--red);}
   .pill.on{color:var(--green);border-color:rgba(0,255,157,.35);}
-  .pill.on .dot{background:var(--green);box-shadow:0 0 8px var(--green);}
+  .pill.on .dot{background:var(--green);}
   .card{background:linear-gradient(180deg,var(--card),var(--card2));
     border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;}
   .card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
@@ -39,9 +39,9 @@
   .field{margin-bottom:12px;}
   .field:last-child{margin-bottom:0;}
   label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;}
-  input,select{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);
+  input{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);
     background:rgba(0,0,0,.28);color:var(--text);padding:0 12px;font-size:13px;outline:none;}
-  input:focus,select:focus{border-color:rgba(0,229,255,.6);}
+  input:focus{border-color:rgba(0,229,255,.6);}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .btn{width:100%;height:48px;border:0;border-radius:14px;font-size:13px;font-weight:800;
     letter-spacing:.4px;cursor:pointer;display:inline-flex;align-items:center;
@@ -49,15 +49,13 @@
   .btn:active{transform:scale(.98);}
   .btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#001016;}
   .btn-secondary{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--line);}
-  .btn-danger{background:rgba(255,59,92,.1);color:var(--red);border:1px solid rgba(255,59,92,.35);}
   .btn-channel{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;margin-top:10px;}
   .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .result{margin-top:10px;padding:10px;border-radius:10px;background:#030609;
     border:1px solid var(--line);font-family:ui-monospace,Menlo,monospace;
-    font-size:11px;color:#b7d7ea;word-break:break-all;min-height:36px;}
+    font-size:11px;color:#b7d7ea;word-break:break-all;min-height:36px;white-space:pre-wrap;}
   .result.ok{color:var(--green);border-color:rgba(0,255,157,.35);}
   .result.err{color:var(--red);border-color:rgba(255,59,92,.35);}
-  .result.warn{color:var(--yellow);border-color:rgba(255,214,10,.35);}
   .kv{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:11px;}
   .kv .k{color:var(--muted);}
   .kv .v{color:var(--text);text-align:right;font-family:ui-monospace,monospace;}
@@ -118,20 +116,6 @@
   </section>
 
   <section class="card">
-    <div class="card-title"><h2>System Proxy</h2><span class="badge">SHIZUKU</span></div>
-    <div class="btn-grid">
-      <button class="btn btn-primary" onclick="setSystemProxy()">SET</button>
-      <button class="btn btn-danger" onclick="HYR.clearSystemProxy()">CLEAR</button>
-    </div>
-    <div class="btn-grid" style="margin-top:10px;">
-      <button class="btn btn-secondary" onclick="HYR.getSystemProxy()" style="grid-column:span 2;">
-        LIHAT PROXY AKTIF
-      </button>
-    </div>
-    <div class="result" id="sysProxyResult">-</div>
-  </section>
-
-  <section class="card">
     <div class="card-title"><h2>Device Info</h2><span class="badge">REAL</span></div>
     <div class="kv" id="deviceInfo">-</div>
     <div class="kv" id="batteryInfo" style="margin-top:10px;"></div>
@@ -151,7 +135,6 @@
 </div>
 
 <script>
-  // ===== INIT =====
   window.onload = function() {
     try {
       document.getElementById("devName").textContent  = "© " + HYR.developer();
@@ -161,20 +144,18 @@
     } catch(e){}
   };
 
-  // ===== SHIZUKU =====
   function refreshShizuku() {
     try {
       const ok = HYR.shizukuReady();
       document.getElementById("shizukuBadge").textContent = ok ? "✓" : "!";
       document.getElementById("shizukuStatus").textContent = ok ? "GRANTED" : "NOT GRANTED";
+      if (ok) document.getElementById("statusPill").classList.add("on");
     } catch(e){}
   }
   window.onShizukuStatus = function(granted) {
     refreshShizuku();
-    alert(granted ? "Shizuku GRANTED" : "Shizuku DENIED");
   };
 
-  // ===== TEST PROXY =====
   function testProxy() {
     const host = document.getElementById("proxyHost").value.trim();
     const port = parseInt(document.getElementById("proxyPort").value);
@@ -195,7 +176,6 @@
     }
   };
 
-  // ===== IP =====
   window.onIPResult = function(r) {
     const el = document.getElementById("ipResult");
     if (r.ok) {
@@ -207,7 +187,6 @@
     }
   };
 
-  // ===== PING =====
   function pingHost() {
     const host = document.getElementById("pingHost").value.trim();
     const el = document.getElementById("pingResult");
@@ -226,7 +205,6 @@
     }
   };
 
-  // ===== DNS =====
   function dnsLookup() {
     const host = document.getElementById("pingHost").value.trim();
     const el = document.getElementById("pingResult");
@@ -245,29 +223,6 @@
     }
   };
 
-  // ===== SYSTEM PROXY =====
-  function setSystemProxy() {
-    const host = document.getElementById("proxyHost").value.trim();
-    const port = parseInt(document.getElementById("proxyPort").value);
-    const el = document.getElementById("sysProxyResult");
-    el.className = "result";
-    el.textContent = "Setting system proxy → " + host + ":" + port;
-    HYR.setSystemProxy(host, port);
-  }
-  window.onSystemProxyResult = function(r) {
-    const el = document.getElementById("sysProxyResult");
-    if (r.ok) {
-      el.className = "result ok";
-      el.textContent = r.proxy !== undefined
-          ? "Current system proxy: " + r.proxy
-          : "✅ Berhasil";
-    } else {
-      el.className = "result err";
-      el.textContent = "❌ " + (r.error || "exit " + r.exit);
-    }
-  };
-
-  // ===== DEVICE INFO =====
   function refreshInfo() {
     try {
       const d = JSON.parse(HYR.deviceInfo());
@@ -284,14 +239,6 @@
           "<span class='k'>Baterai</span><span class='v'>" + b.level + "%</span>";
     } catch(e){}
   }
-
-  // ===== STATUS PILL =====
-  setTimeout(function(){
-    try {
-      if (HYR.shizukuReady())
-        document.getElementById("statusPill").classList.add("on");
-    } catch(e){}
-  }, 500);
 </script>
 </body>
 </html>
