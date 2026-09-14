@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,8 +49,7 @@ jobs:
             fi
           done
           if [ $MISSING -eq 1 ]; then
-            echo ""
-            echo "File di atas belum di-commit. Tambahkan dulu."
+            echo "File di atas belum di-commit."
             exit 1
           fi
 
@@ -85,9 +87,20 @@ jobs:
 
       - name: Create Release
         if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
           name: PROXY HYR v1.0.${{ github.run_number }} — ZyeCitedz
+          body: |
+            ## PROXY HYR — Unity IL Patch
+            
+            **Developer:** © ZyeCitedz  
+            **Channel:** [PROXY UPDATE](https://whatsapp.com/channel/0029VbCdJuNDZ4LT4arD1H3v)
+            
+            ### Fitur
+            - Login gate
+            - Shizuku integration
+            - Background foreground service
           files: app/build/outputs/apk/debug/*.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
