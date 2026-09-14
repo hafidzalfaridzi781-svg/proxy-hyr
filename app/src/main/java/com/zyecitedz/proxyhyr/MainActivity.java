@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -22,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -85,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // ============================================================
-    // JAVASCRIPT BRIDGE — semua method di sini FUNGSIONAL
+    // ================== SHIZUKU EXEC VIA REFLECTION ==================
+    private static Process shizukuExec(String cmd) throws Exception {
+        Method m = Shizuku.class.getDeclaredMethod(
+                "newProcess", String[].class, String[].class, String.class);
+        m.setAccessible(true);
+        return (Process) m.invoke(null, new String[]{"sh", "-c", cmd}, null, null);
+    }
+
     // ============================================================
     public class RealBridge {
 
@@ -127,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        // ==== TEST PROXY (REAL) ====
+        // ==== TEST PROXY ====
         @JavascriptInterface
         public void testProxy(String host, int port) {
             new Thread(() -> {
@@ -157,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== IP PUBLIK (REAL) ====
+        // ==== IP PUBLIK ====
         @JavascriptInterface
         public void checkIP() {
             new Thread(() -> {
@@ -179,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== PING (REAL) ====
+        // ==== PING ====
         @JavascriptInterface
         public void ping(String host) {
             new Thread(() -> {
@@ -199,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== DNS LOOKUP (REAL) ====
+        // ==== DNS ====
         @JavascriptInterface
         public void dnsLookup(String host) {
             new Thread(() -> {
@@ -221,14 +227,14 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== SET SYSTEM PROXY via Shizuku (REAL) ====
+        // ==== SET SYSTEM PROXY ====
         @JavascriptInterface
         public void setSystemProxy(String host, int port) {
             new Thread(() -> {
                 String result;
                 try {
-                    String cmd = "settings put global http_proxy " + host + ":" + port;
-                    Process p = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null);
+                    Process p = shizukuExec("settings put global http_proxy " +
+                            host + ":" + port);
                     int exit = p.waitFor();
                     result = "{\"ok\":" + (exit == 0) + ",\"exit\":" + exit + "}";
                 } catch (Throwable e) {
@@ -239,14 +245,13 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== CLEAR SYSTEM PROXY (REAL) ====
+        // ==== CLEAR SYSTEM PROXY ====
         @JavascriptInterface
         public void clearSystemProxy() {
             new Thread(() -> {
                 String result;
                 try {
-                    Process p = Shizuku.newProcess(new String[]{
-                            "sh", "-c", "settings put global http_proxy :0"}, null, null);
+                    Process p = shizukuExec("settings put global http_proxy :0");
                     int exit = p.waitFor();
                     result = "{\"ok\":" + (exit == 0) + "}";
                 } catch (Throwable e) {
@@ -257,14 +262,13 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== GET SYSTEM PROXY (REAL) ====
+        // ==== GET SYSTEM PROXY ====
         @JavascriptInterface
         public void getSystemProxy() {
             new Thread(() -> {
                 String result;
                 try {
-                    Process p = Shizuku.newProcess(new String[]{
-                            "sh", "-c", "settings get global http_proxy"}, null, null);
+                    Process p = shizukuExec("settings get global http_proxy");
                     BufferedReader br = new BufferedReader(
                             new InputStreamReader(p.getInputStream()));
                     String val = br.readLine();
@@ -279,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
 
-        // ==== DEVICE INFO (REAL) ====
+        // ==== DEVICE INFO ====
         @JavascriptInterface
         public String deviceInfo() {
             Runtime r = Runtime.getRuntime();
@@ -293,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                     "\"heap_max_mb\":" + maxMb + "}";
         }
 
-        // ==== BATTERY INFO (REAL) ====
+        // ==== BATTERY ====
         @JavascriptInterface
         public String batteryInfo() {
             android.os.BatteryManager bm = (android.os.BatteryManager)
