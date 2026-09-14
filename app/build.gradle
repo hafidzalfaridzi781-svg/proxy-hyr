@@ -1,0 +1,37 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.zyecitedz.proxyhyr'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.zyecitedz.proxyhyr"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+        setProperty("archivesBaseName", "PROXY-HYR-v${versionName}")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
+}
