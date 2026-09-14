@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#05070A"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PROXY HYR"
+        android:textColor="#00E5FF"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Unity IL Patch"
+        android:textColor="#7F95AD"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tv_dev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="© ZyeCitedz"
+        android:textColor="#00FF9D"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="32dp" />
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="#0D131C"
+        android:hint="Masukkan key akses"
+        android:inputType="textPassword"
+        android:paddingHorizontal="16dp"
+        android:textColor="#E8F4FF"
+        android:textColorHint="#5D7288"
+        android:autofillHints="" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#00E5FF"
+        android:text="LOGIN"
+        android:textColor="#001016"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_channel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="PROXY UPDATE"
+        android:textColor="#00E5FF"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="whatsapp.com/channel/0029VbCdJuNDZ4LT4arD1H3v"
+        android:textColor="#7F95AD"
+        android:textSize="10sp" />
+
+</LinearLayout>
